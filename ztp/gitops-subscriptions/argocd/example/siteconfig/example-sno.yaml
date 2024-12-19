@@ -1,10 +1,10 @@
-# example-node1-bmh-secret & assisted-deployment-pull-secret need to be created under same namespace example-sno
+# example-node1-bmh-secret & assisted-deployment-pull-secret need to be created under same namespace ocpsm5993
 ---
 apiVersion: ran.openshift.io/v1
 kind: SiteConfig
 metadata:
-  name: "example-sno"
-  namespace: "example-sno"
+  name: "ocpsm5993"
+  namespace: "ocpsm5993"
 spec:
   baseDomain: "example.com"
   pullSecretRef:
@@ -12,7 +12,7 @@ spec:
   clusterImageSetNameRef: "openshift-4.16"
   sshPublicKey: "ssh-rsa AAAA..."
   clusters:
-  - clusterName: "example-sno"
+  - clusterName: "ocpsm5993"
     networkType: "OVNKubernetes"
     # installConfigOverrides is a generic way of passing install-config
     # parameters through the siteConfig.  The 'capabilities' field configures
@@ -37,25 +37,25 @@ spec:
     # The crun manifests can be obtained from source-crs/optional-extra-manifest/ and added to the git repo ie.sno-extra-manifest.
     # extraManifestPath: sno-extra-manifest
     clusterLabels:
-      # These example cluster labels correspond to the bindingRules in the PolicyGenTemplate examples
-      du-profile: "latest"
-      # These example cluster labels correspond to the bindingRules in the PolicyGenTemplate examples in ../policygentemplates:
-      # ../policygentemplates/common-ranGen.yaml will apply to all clusters with 'common: true'
-      common: true
-      # ../policygentemplates/group-du-sno-ranGen.yaml will apply to all clusters with 'group-du-sno: ""'
-      group-du-sno: ""
-      # ../policygentemplates/example-sno-site.yaml will apply to all clusters with 'sites: "example-sno"'
-      # Normally this should match or contain the cluster name so it only applies to a single cluster
-      sites : "example-sno"
+      store-label: "woolies"
+      common: "true"
+      sites : "ocpsm5993"
+#network for the pods      
     clusterNetwork:
-      - cidr: 1001:1::/48
-        hostPrefix: 64
+    - cidr: 100.104.0.0/14
+      hostPrefix: 23
+
+#network for the nodes
+
     machineNetwork:
-      - cidr: 1111:2222:3333:4444::/64
+      - cidr: 10.48.194.0/24
+
+#Network for service  
     serviceNetwork:
-      - 1001:2::/112
+      - 100.108.0.0/16
     additionalNTPSources:
-      - 1111:2222:3333:4444::2
+      - wwtimesrv1.woolworths.com.au
+      - wwtimesrv2.woolworths.com.au
     # Initiates the cluster for workload partitioning. Setting specific reserved/isolated CPUSets is done via PolicyTemplate
     # please see Workload Partitioning Feature for a complete guide.
     cpuPartitioningMode: AllNodes
