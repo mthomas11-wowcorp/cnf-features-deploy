@@ -1,0 +1,106 @@
+---
+apiVersion: ran.openshift.io/v1
+kind: SiteConfig
+metadata:
+  name: "ocpsm5993"
+  namespace: "ocpsm5993"
+spec:
+  baseDomain: "stores.dev.wowcorp.com.au"
+  pullSecretRef:
+    name: "assisted-deployment-pull-secret"
+  clusterImageSetNameRef: "openshift-4.17"
+
+  sshPublicKey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIET5pBP0SztXEpe+fZzCt0HklDxOEXwAGqOAavuB2zPi root@localhost.localdomain"
+  clusters:
+  - clusterName: "ocpsm5993"
+    networkType: "OVNKubernetes"
+
+
+    extraManifests:
+      searchPaths:
+        - ../../extra-manifest/gpu
+        - ../../extra-manifest/disconnected-extra-manifests
+    
+      filter:
+        inclusionDefault: exclude
+        include:
+        - catalogSource-cs-redhat-marketplace-index.yaml
+        - catalogSource-cs-redhat-operator-index.yaml
+        - image-digest-mirrorset.yaml
+        - operatorhub.yaml
+        - update-service.yaml
+        - vfiopci-config.yaml
+        - kernel-arg-intel-iommu.yaml
+
+    # installConfigOverrides is a generic way of passing install-config
+    # parameters through the siteConfig.  The 'capabilities' field configures
+    # the composable openshift feature.  In this 'capabilities' setting, we
+    # remove all the optional set of components.
+
+    # It is strongly recommended to include crun manifests as part of the additional install-time manifests for 4.13+.
+    # The crun manifests can be obtained from source-crs/optional-extra-manifest/ and added to the git repo ie.sno-extra-manifest.
+    # extraManifestPath: sno-extra-manifest
+    clusterLabels:
+      store-label: "woolies"
+      common: "true"
+      sites : "ocpsm5993"
+#network for the pods      
+    clusterNetwork:
+    - cidr: 100.104.0.0/14
+      hostPrefix: 23
+
+#network for the nodes
+
+    machineNetwork:
+      - cidr: 10.48.194.0/24
+
+#Network for service  
+    serviceNetwork:
+    - 100.108.0.0/16
+    additionalNTPSources:
+      - wwtimesrv1.woolworths.com.au
+      - wwtimesrv2.woolworths.com.au
+
+    nodes:
+      - hostName: "ocpsm5993.example.com"
+        role: "master"
+        # Optionally; This can be used to configure desired BIOS setting on a host:
+        #biosConfigRef:
+        #  filePath: "example-hw.profile"
+        bmcAddress: "idrac-virtualmedia://10.48.194.212/redfish/v1/Systems/System.Embedded.1"
+        bmcCredentialsName:
+          name: "ocpsm5993-node1-bmh-secret"
+        bootMACAddress: "b4:45:06:e4:f1:18"
+        # Use UEFISecureBoot to enable secure boot, UEFI to disable.
+        bootMode: "UEFI"
+        rootDeviceHints:
+          deviceName: "/dev/disk/by-path/pci-0000:05:00.0-ata-1"
+        # disk partition at `/var/lib/containers` with ignitionConfigOverride. Some values must be updated. See DiskPartitionContainer.md for more details
+        nodeNetwork:
+          interfaces:
+          - macAddress: "b4:45:06:e4:f1:18"
+            name: eno8303
+          - macAddress: "b4:45:06:e4:f1:19"
+            name: eno8403
+          config:
+            dns-resolver:
+              config:
+                server:
+                - 10.56.93.20
+                - 10.56.93.21
+            interfaces:
+            - name: bond0
+              type: bond
+              state: up
+              ipv4:
+                enabled: false
+              ipv6:
+                enabled: false
+              link-aggregation:
+                mode: 802.3ad
+                options:
+                  miimon: "100"
+                  lacp_rate: "slow"
+                port:
+                - eno8303
+                - eno8403
