@@ -62,21 +62,21 @@ spec:
     # Optionally; This can be used to override the KlusterletAddonConfig that is created for this cluster:
     #crTemplates:
     #  KlusterletAddonConfig: "KlusterletAddonConfigOverride.yaml"
+
     nodes:
-      - hostName: "example-node1.example.com"
+      - hostName: "ocpsm5993.example.com"
         role: "master"
         # Optionally; This can be used to configure desired BIOS setting on a host:
         #biosConfigRef:
         #  filePath: "example-hw.profile"
-        bmcAddress: "idrac-virtualmedia+https://[1111:2222:3333:4444::bbbb:1]/redfish/v1/Systems/System.Embedded.1"
+        bmcAddress: "idrac-virtualmedia://10.48.194.212/redfish/v1/Systems/System.Embedded.1"
         bmcCredentialsName:
-          name: "example-node1-bmh-secret"
-        bootMACAddress: "AA:BB:CC:DD:EE:11"
+          name: "ocpsm5993-node1-bmh-secret"
+        bootMACAddress: "b4:45:06:e4:f1:18"
         # Use UEFISecureBoot to enable secure boot, UEFI to disable.
-        bootMode: "UEFISecureBoot"
+        bootMode: "UEFI"
         rootDeviceHints:
-          deviceName: "/dev/disk/by-path/pci-0000:01:00.0-scsi-0:2:0:0"
-        # disk partition at `/var/lib/containers` with ignitionConfigOverride. Some values must be updated. See DiskPartitionContainer.md for more details
+          deviceName: "/dev/disk/by-path/pci-0000:05:00.0-ata-1"
         ignitionConfigOverride: |
           {
             "ignition": {
@@ -118,35 +118,35 @@ spec:
                 }
               ]
             }
-          }
+          }          
+        # disk partition at `/var/lib/containers` with ignitionConfigOverride. Some values must be updated. See DiskPartitionContainer.md for more details
         nodeNetwork:
           interfaces:
-            - name: eno1
-              macAddress: "AA:BB:CC:DD:EE:11"
+          - macAddress: "b4:45:06:e4:f1:18"
+            name: eno8303
+          - macAddress: "b4:45:06:e4:f1:19"
+            name: eno8403
           config:
-            interfaces:
-              - name: eno1
-                type: ethernet
-                state: up
-                ipv4:
-                  enabled: false
-                ipv6:
-                  enabled: true
-                  address:
-                  # For SNO sites with static IP addresses, the node-specific,
-                  # API and Ingress IPs should all be the same and configured on
-                  # the interface
-                  - ip: 1111:2222:3333:4444::aaaa:1
-                    prefix-length: 64
             dns-resolver:
               config:
-                search:
-                - example.com
                 server:
-                - 1111:2222:3333:4444::2
-            routes:
-              config:
-              - destination: ::/0
-                next-hop-interface: eno1
-                next-hop-address: 1111:2222:3333:4444::1
-                table-id: 254
+                - 10.56.93.20
+                - 10.56.93.21
+            interfaces:
+            - name: bond0
+              type: bond
+              state: up
+              ipv4:
+                enabled: false
+              ipv6:
+                enabled: false
+              link-aggregation:
+                mode: 802.3ad
+                options:
+                  miimon: "100"
+                  lacp_rate: "slow"
+                port:
+                - eno8303
+                - eno8403
+    
+  
