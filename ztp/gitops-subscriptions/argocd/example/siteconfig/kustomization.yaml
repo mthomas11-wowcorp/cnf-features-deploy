@@ -3,5 +3,4 @@ kind: Kustomization
 
 generators:
 - example-sno.yaml
-- example-3node.yaml
-- example-standard.yaml
+
