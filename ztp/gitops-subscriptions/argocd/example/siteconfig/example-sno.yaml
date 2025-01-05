@@ -9,8 +9,8 @@ spec:
   baseDomain: "example.com"
   pullSecretRef:
     name: "assisted-deployment-pull-secret"
-  clusterImageSetNameRef: "img4.17.9-x86-64-appsub"
-  sshPublicKey: "ssh-rsa AAAA..."
+  clusterImageSetNameRef: "img4.17.10-x86-64-appsub"
+  sshPublicKey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA41Wa1TqY0MVn9xd2TZWpbHPanJxG76WOXsXujWhu/N mobthoma@mobthoma-mac"
   clusters:
   - clusterName: "ocpsm5993"
     networkType: "OVNKubernetes"
