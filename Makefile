@@ -3,7 +3,7 @@ export FEATURES?=sctp performance vrf container-mount-namespace metallb tuningcn
 export SKIP_TESTS?=
 export FOCUS_TESTS?=
 export METALLB_OPERATOR_TARGET_COMMIT?=main
-export SRIOV_NETWORK_OPERATOR_TARGET_COMMIT?=master
+export SRIOV_NETWORK_OPERATOR_TARGET_COMMIT?=main
 export CLUSTER_NODE_TUNING_OPERATOR_TARGET_COMMIT?=master
 IMAGE_BUILD_CMD ?= "docker"
 
@@ -94,7 +94,10 @@ govet:
 verify-commits:
 	hack/verify-commits.sh
 
-ci-job: verify-commits gofmt golint govet cnftests-unit
+verify-images-updated:
+	hack/verify-images-updated.sh
+
+ci-job: verify-commits verify-images-updated gofmt golint govet cnftests-unit
 	
 ztp-ci-job:
 	$(MAKE) -C ztp ci-job

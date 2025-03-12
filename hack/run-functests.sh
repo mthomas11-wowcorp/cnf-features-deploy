@@ -10,8 +10,8 @@ export GINKGO_PARAMS=${GINKGO_PARAMS:-'-vv --show-node-events -timeout 6h'}
 
 #env variables needed for the containerized version
 export TEST_POD_IMAGES_REGISTRY="${TEST_POD_IMAGES_REGISTRY:-quay.io/openshift-kni/}"
-export TEST_POD_CNF_TEST_IMAGE="${TEST_POD_CNF_TEST_IMAGE:-cnf-tests:4.12}"
-export TEST_POD_DPDK_TEST_IMAGE="${TEST_POD_DPDK_TEST_IMAGE:-dpdk:4.12}"
+export TEST_POD_CNF_TEST_IMAGE="${TEST_POD_CNF_TEST_IMAGE:-cnf-tests:${OCP_VERSION}}"
+export TEST_POD_DPDK_TEST_IMAGE="${TEST_POD_DPDK_TEST_IMAGE:-dpdk:${OCP_VERSION}}"
 
 export TEST_EXECUTION_IMAGE=$TEST_POD_IMAGES_REGISTRY$TEST_POD_CNF_TEST_IMAGE
 export SCTPTEST_HAS_NON_CNF_WORKERS="${SCTPTEST_HAS_NON_CNF_WORKERS:-true}"
@@ -19,10 +19,11 @@ export SCTPTEST_HAS_NON_CNF_WORKERS="${SCTPTEST_HAS_NON_CNF_WORKERS:-true}"
 # or need to run the tests again. In both cases the execution will be faster without deleting the profile.
 export CLEAN_PERFORMANCE_PROFILE="false"
 
-# Latency tests env variables
-export LATENCY_TEST_RUN=${LATENCY_TEST_RUN:-false}
-
 export IS_OPENSHIFT="${IS_OPENSHIFT:-true}"
+
+# Read by sriov-network-operator confomrance test suite when dumping resource, on test failures.
+# https://github.com/k8snetworkplumbingwg/sriov-network-operator/pull/636
+export MULTUS_NAMESPACE=openshift-multus
 
 # The metallb tests cover both frr and frr-k8s, and we don't
 # currently deploy frr-k8s mode
